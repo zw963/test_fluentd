@@ -19,10 +19,10 @@ require 'etc'; workers ENV.fetch('WEB_CONCURRENCY', Etc.nprocessors).to_i
 bind "unix://#{app_path}/tmp/puma.sock"
 # port = ENV.fetch('DEFAULT_PORT', 3000)
 
-if ENV['RAILS_LOG_TO_STDOUT'] == 'true'
+# if ENV['RAILS_LOG_TO_STDOUT'] == 'true'
   stdout_redirect "log/puma.access.log", "log/puma.err.log"
-  daemonize
-end
+  # daemonize
+# end
 
 # bind "tcp://0.0.0.0:#{port}" unless port.nil?
 
