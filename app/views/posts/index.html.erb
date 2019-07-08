@@ -2,6 +2,7 @@
 <h1>RAILS_ENV: <%= ENV['RAILS_ENV'] %></h1>
 <h1>DATABASE_URL: <%= ENV['DATABASE_URL'] %></h1>
 <h1>REMOTE_IP: <%= request.remote_ip %></h1>
+<h1>X-Real-IP: <%= request.headers["X-Real-IP"] %></h1>
 
 <p id="notice"><%= notice %></p>
 
