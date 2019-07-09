@@ -94,12 +94,17 @@ Rails.application.configure do
 
   config.log_level = :info
   config.logger = ActFluentLoggerRails::Logger.new
+
+  config.lograge.keep_original_rails_log = true
+  config.lograge.logger = ActiveSupport::Logger.new "#{Rails.root}/log/lograge_#{Rails.env}.log"
+
   config.lograge.enabled = true
   config.lograge.formatter = Lograge::Formatters::Json.new
   config.lograge.custom_options = lambda do |event|
     {
       exception: event.payload[:exception],
-      exception_object: event.payload[:exception_object]
+      exception_object: event.payload[:exception_object],
+      time: Time.now
     }
   end
 end
