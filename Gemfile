@@ -51,6 +51,9 @@ group :development do
 end
 
 gem 'fluentd'
+gem 'act-fluent-logger-rails'
+gem 'lograge'
+gem 'fluent-plugin-parser'
 
 group :test do
   # Adds support for Capybara system testing and selenium driver
