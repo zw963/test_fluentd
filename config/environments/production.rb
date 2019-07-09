@@ -99,7 +99,24 @@ Rails.application.configure do
   config.lograge.logger = ActiveSupport::Logger.new "#{Rails.root}/log/lograge_#{Rails.env}.log"
 
   config.lograge.enabled = true
-  # config.lograge.formatter = Lograge::Formatters::Json.new
+  # {:method=>"GET",
+  #   :path=>"/posts",
+  #   :format=>:html,
+  #   :controller=>"PostsController",
+  #   :action=>"index",
+  #   :status=>200,
+  #   :duration=>4.55,
+  #   :view=>3.0,
+  #   :db=>0.82,
+  #   :exception=>nil,
+  #   :exception_object=>nil,
+  #   :time=>2019-07-10 01:40:51 +0800}
+
+  config.lograge.formatter = ->(data) do
+    {
+      'action' => data.dig(:action)
+    }.to_json
+  end
   config.lograge.custom_options = lambda do |event|
     {
       exception: event.payload[:exception],
