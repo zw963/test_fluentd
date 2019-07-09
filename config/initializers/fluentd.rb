@@ -1,1 +1,1 @@
-require 'fluent/plugin/out_detect_exceptions'
+# require 'fluent/plugin/out_detect_exceptions'

@@ -85,8 +85,6 @@ GEM
     ffi (1.11.1)
     fluent-logger (0.8.1)
       msgpack (>= 1.0.0, < 2)
-    fluent-plugin-detect-exceptions (0.0.12)
-      fluentd (>= 0.10)
     fluentd (1.6.0)
       cool.io (>= 1.4.5, < 2.0.0)
       dig_rb (~> 1.0.0)
@@ -233,7 +231,6 @@ DEPENDENCIES
   capybara (>= 2.15)
   chromedriver-helper
   coffee-rails (~> 4.2)
-  fluent-plugin-detect-exceptions
   fluentd
   jbuilder (~> 2.5)
   listen (>= 3.0.5, < 3.2)

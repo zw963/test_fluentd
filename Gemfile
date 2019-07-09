@@ -53,7 +53,7 @@ end
 gem 'fluentd'
 gem 'act-fluent-logger-rails'
 gem 'lograge'
-gem 'fluent-plugin-detect-exceptions'
+# gem 'fluent-plugin-detect-exceptions'
 
 group :test do
   # Adds support for Capybara system testing and selenium driver
