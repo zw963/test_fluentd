@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/grafana/loki
+  revision: de83272b2f197d02fcd7046998533485c33681fe
+  branch: master
+  glob: fluentd/fluent-plugin-grafana-loki/*.gemspec
+  specs:
+    fluent-plugin-grafana-loki (1.0.0)
+      fluentd (>= 0.14.10, < 2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -235,6 +244,7 @@ DEPENDENCIES
   capybara (>= 2.15)
   chromedriver-helper
   coffee-rails (~> 4.2)
+  fluent-plugin-grafana-loki!
   fluent-plugin-influxdb
   fluentd
   jbuilder (~> 2.5)
