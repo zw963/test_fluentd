@@ -118,6 +118,14 @@ Rails.application.configure do
   #   }.to_json
   # end
   config.lograge.formatter = Lograge::Formatters::Json.new
+
+  config.lograge.custom_payload do |controller|
+    {
+      host: controller.request.host,
+      user_id: controller.current_user.try(:id)
+    }
+  end
+
   config.lograge.custom_options = lambda do |event|
     {
       exception: event.payload[:exception],
