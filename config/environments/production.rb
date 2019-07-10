@@ -95,8 +95,8 @@ Rails.application.configure do
   config.log_level = :info
   config.logger = ActFluentLoggerRails::Logger.new
 
-  config.lograge.keep_original_rails_log = true
-  config.lograge.logger = ActiveSupport::Logger.new "#{Rails.root}/log/lograge_#{Rails.env}.log"
+  # config.lograge.keep_original_rails_log = true
+  # config.lograge.logger = ActiveSupport::Logger.new "#{Rails.root}/log/lograge_#{Rails.env}.log"
 
   config.lograge.enabled = true
   # {:method=>"GET",
