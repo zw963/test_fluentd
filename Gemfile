@@ -53,7 +53,8 @@ end
 gem 'fluentd'
 gem 'act-fluent-logger-rails'
 gem 'lograge'
-gem 'fluent-plugin-mongo'
+# gem 'fluent-plugin-mongo'
+gem 'fluent-plugin-influxdb'
 # gem 'fluent-plugin-detect-exceptions'
 
 group :test do

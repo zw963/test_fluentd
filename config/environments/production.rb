@@ -112,11 +112,12 @@ Rails.application.configure do
   #   :exception_object=>nil,
   #   :time=>2019-07-10 01:40:51 +0800}
 
-  config.lograge.formatter = ->(data) do
-    {
-      'action' => data.dig(:action)
-    }.to_json
-  end
+  # config.lograge.formatter = ->(data) do
+  #   {
+  #     'action' => data.dig(:action)
+  #   }.to_json
+  # end
+  config.lograge.formatter = Lograge::Formatters::Json.new
   config.lograge.custom_options = lambda do |event|
     {
       exception: event.payload[:exception],
