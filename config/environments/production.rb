@@ -117,7 +117,8 @@ Rails.application.configure do
   #     'action' => data.dig(:action)
   #   }.to_json
   # end
-  config.lograge.formatter = Lograge::Formatters::Json.new
+  
+  # config.lograge.formatter = Lograge::Formatters::Json.new
 
   config.lograge.custom_payload do |controller|
     {
