@@ -98,7 +98,7 @@ Rails.application.configure do
   # config.lograge.keep_original_rails_log = true
   # config.lograge.logger = ActiveSupport::Logger.new "#{Rails.root}/log/lograge_#{Rails.env}.log"
 
-  config.lograge.enabled = false
+  config.lograge.enabled = true
   # {:method=>"GET",
   #   :path=>"/posts",
   #   :format=>:html,
@@ -117,8 +117,8 @@ Rails.application.configure do
   #     'action' => data.dig(:action)
   #   }.to_json
   # end
-  
-  # config.lograge.formatter = Lograge::Formatters::Json.new
+
+  config.lograge.formatter = Lograge::Formatters::Json.new
 
   config.lograge.custom_payload do |controller|
     {
