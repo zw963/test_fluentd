@@ -118,7 +118,7 @@ Rails.application.configure do
   #   }.to_json
   # end
 
-  config.lograge.formatter = Lograge::Formatters::Json.new
+  # config.lograge.formatter = Lograge::Formatters::Json.new
 
   config.lograge.custom_payload do |controller|
     {
@@ -127,11 +127,14 @@ Rails.application.configure do
     }
   end
 
-  config.lograge.custom_options = lambda do |event|
-    {
-      exception: event.payload[:exception],
-      exception_object: event.payload[:exception_object],
-      time: Time.now
-    }
-  end
+  # config.lograge.custom_options = lambda do |event|
+  #   pp event.payload[:exception]
+  #   pp event.payload[:exception_object]
+  #   {}
+  #   # {
+  #   #   exception: event.payload[:exception],
+  #   #   exception_object: event.payload[:exception_object],
+  #   #   time: Time.now
+  #   # }
+  # end
 end
