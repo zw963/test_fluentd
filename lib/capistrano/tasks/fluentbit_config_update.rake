@@ -12,13 +12,6 @@ namespace :fluentbit do
         exit
       end
 
-      # fail 'fluentbit start not correct.' if test('sudo systemctl restart td-agent-bit')
-
-      # project_configs = [
-      #         "#{deploy_to}/current/config/containers/nginx/config/td-agent-bit_#{fetch(:stage)}.conf",
-      #         "#{deploy_to}/current/config/containers/nginx/config/td-agent-bit_#{fetch(:stage)}.conf",
-      # ]
-
       config_root = Pathname("#{deploy_to}/current/config/containers/fluentbit/config")
       config_file_pattern = "*_#{fetch(:stage)}.conf"
 
