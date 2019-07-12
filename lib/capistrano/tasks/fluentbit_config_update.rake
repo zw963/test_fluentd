@@ -1,50 +1,51 @@
-namespace :fluentbit do
-  desc 'Link fluentbit config into system fluentbit config.'
+namespace :fluentbit do |namespace|
+  ns_name = namespace.scope.path
+  service_name = 'td-agent-bit'
 
+  desc "Link project #{ns_name} config into system #{ns_name} config."
   task :config_update do
     on roles(:worker) do
       if test '[[ $(cat /etc/*-release) =~ Ubuntu|Mint ]]'
-        fluentbit_config_dir = Pathname('/etc/td-agent-bit')
+        system_config_dir = Pathname("/etc/#{service_name}")
       elsif test '[[ $(cat /etc/*-release) =~ CentOS ]]'
-        fluentbit_config_dir = Pathname('/etc/td-agent-bit')
+        system_config_dir = Pathname("/etc/#{service_name}")
       else
-        info 'Skip `fluentbit:update`'
+        info "Skip `#{ns_name}:update`"
         exit
       end
 
-      config_root = Pathname("#{deploy_to}/current/config/containers/fluentbit/config")
-      config_file_pattern = "*_#{fetch(:stage)}.conf"
-
-      project_config_files = capture("find #{config_root} -name #{config_file_pattern}").split("\n").map {|e| Pathname(e) }
+      project_config_dir = Pathname("#{deploy_to}/current/config/containers/#{ns_name}/config")
+      project_config_suffix = "_#{fetch(:stage)}"
+      project_config_files = capture("find #{project_config_dir} -name *#{project_config_suffix}.conf").split("\n").map {|e| Pathname(e) }
 
       should_reload_service = false
 
-      project_config_files.each do |config|
-        system_config_name = config.relative_path_from(config_root).sub("_#{fetch(:stage)}", '')
-        system_config_path = fluentbit_config_dir.join(system_config_name).to_s
+      project_config_files.each do |project_config_file|
+        system_config_name = project_config_file.relative_path_from(project_config_dir).sub(project_config_suffix, '')
+        system_config_file = system_config_dir.join(system_config_name).to_s
 
-        fail "#{config} is not exist." unless test "[ -e #{config} ]"
+        fail "#{project_config_file} is not exist." unless test "[ -e #{project_config_file} ]"
 
-        next if test "[ -e #{system_config_path} ] && diff #{system_config_path} #{config} -q"
+        next if test "[ -e #{system_config_file} ] && diff #{system_config_file} #{project_config_file} -q"
 
         # if system config exist, and two one exist diff.
         should_reload_service = true
 
         # if system config exist, and new than project one, i think some one change it.
-        if test "[[ -e #{system_config_path} && #{system_config_path} -nt #{config} ]]"
+        if test "[[ -e #{system_config_file} && #{system_config_file} -nt #{project_config_file} ]]"
           # should backup it.
-          execute :sudo, "mv #{system_config_path} #{system_config_path}-#{Time.now.strftime('%Y-%m-%d_%H:%M:%S')}"
+          execute :sudo, "mv #{system_config_file} #{system_config_file}-#{Time.now.strftime('%Y-%m-%d_%H:%M:%S')}"
         end
 
-        execute :sudo, "cp -a #{config} #{system_config_path}"
+        execute :sudo, "cp -a #{project_config_file} #{system_config_file}"
       end
 
-      next info "Skip reboot fluentbit because no config is changed" if should_reload_service == false
+      next info "Skip reboot #{ns_name} because no config is changed" if should_reload_service == false
 
-      if test 'sudo systemctl restart td-agent-bit'
-        info 'fluentbit is reloaded!'
+      if test "sudo systemctl restart #{service_name}"
+        info "#{ns_name} is reloaded!"
       else
-        execute :sudo, "systemctl status td-agent-bit"
+        execute :sudo, "systemctl status #{service_name}"
       end
     end
   end
