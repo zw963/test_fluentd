@@ -24,11 +24,9 @@ namespace :fluentbit do |namespace|
         system_config_name = project_config_file.relative_path_from(project_config_dir).sub(project_config_suffix, '')
         system_config_file = system_config_dir.join(system_config_name).to_s
 
-        fail "#{project_config_file} is not exist." unless test "[ -e #{project_config_file} ]"
-
+        # if system config exist, and two one no diff.
         next if test "[ -e #{system_config_file} ] && diff #{system_config_file} #{project_config_file} -q"
 
-        # if system config exist, and two one exist diff.
         should_reload_service = true
 
         # if system config exist, and new than project one, i think some one change it.
@@ -40,13 +38,11 @@ namespace :fluentbit do |namespace|
         execute :sudo, "cp -a #{project_config_file} #{system_config_file}"
       end
 
-      next info "Skip reboot #{ns_name} because no config is changed" if should_reload_service == false
+      next info "Skip reboot #{ns_name} because no config is changed." if should_reload_service == false
 
-      if test "sudo systemctl restart #{service_name}"
-        info "#{ns_name} is reloaded!"
-      else
-        execute :sudo, "systemctl status #{service_name}"
-      end
+      test "sudo systemctl restart #{service_name}"
+      execute :sudo, "systemctl status #{service_name}"
+      info "#{ns_name} is reloaded!"
     end
   end
 end

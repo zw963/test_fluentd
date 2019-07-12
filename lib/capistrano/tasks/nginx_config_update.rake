@@ -1,46 +1,53 @@
-# namespace :nginx do
-#   ns_name = namespace.scope.path
+namespace :nginx do |namespace|
+  ns_name = namespace.scope.path
+  service_name = ns_name
 
-#   desc "Link project #{ns_name} config into system #{ns_name} config."
-#   task :config_update do
-#     on roles(:worker) do
-#       if test '[[ $(cat /etc/*-release) =~ Ubuntu|Mint ]]'
-#         nginx_config_dir = '/etc/nginx/sites-enabled'
-#       elsif test '[[ $(cat /etc/*-release) =~ CentOS ]]'
-#         nginx_config_dir = '/etc/nginx/conf.d'
-#       else
-#         info "Skip `#{ns_name}:update`"
-#         exit
-#       end
+  desc "Link project #{ns_name} config into system #{ns_name} config."
+  task :config_update do
+    on roles(:worker) do
+      if test '[[ $(cat /etc/*-release) =~ Ubuntu|Mint ]]'
+        system_config_dir = Pathname("/etc/#{service_name}")
+      elsif test '[[ $(cat /etc/*-release) =~ CentOS ]]'
+        system_config_dir = Pathname("/etc/#{service_name}")
+      else
+        info "Skip `#{ns_name}:update`"
+        exit
+      end
 
-#       # if test('sudo nginx -t')
-#       project_config_dir = Pathname("#{deploy_to}/current/config/containers/#{ns_name}/config")
+      project_config_dir = Pathname("#{deploy_to}/current/config/containers/#{ns_name}/config")
+      project_config_suffix = "_#{fetch(:stage)}"
+      project_config_files = capture("find #{project_config_dir} -name *#{project_config_suffix}.conf").split("\n").map {|e| Pathname(e) }
 
-#       # project_nginx_config = "#{deploy_to}/current/config/containers/nginx/config/nginx_#{fetch(:stage)}.conf"
+      should_reload_service = false
 
-#       config = "#{nginx_config_dir}/#{fetch(:application)}_#{fetch(:stage)}.conf"
-#       config_file_pattern = "*_#{fetch(:stage)}.conf"
+      project_config_files.each do |project_config_file|
+        system_config_name = project_config_file.relative_path_from(project_config_dir).sub(project_config_suffix, '')
+        system_config_file = system_config_dir.join(system_config_name).to_s
 
-#       project_config_files = capture("find #{project_config_dir} -name #{config_file_pattern}").split("\n").map {|e| Pathname(e) }
+        # if system config exist, and two one no diff.
+        next if test "[ -e #{system_config_file} ] && diff #{system_config_file} #{project_config_file} -q"
 
-#       if test "[ -f #{config} -a ! -L #{config} ]"
-#         # Backup not a symlink config
-#         execute :sudo, "mv #{config} /#{config}-#{Time.now.strftime('%Y-%m-%d_%H:%M:%S')}"
-#       end
+        should_reload_service = true
 
-#       if test "[ -e #{project_nginx_config} ]"
-#         execute :sudo, "ln -sf #{project_nginx_config} #{config}"
-#         execute :sudo, 'nginx -t'
-#         execute :sudo, 'nginx -s reload'
-#         info 'nginx is reloaded!'
-#       else
-#         fail "#{project_nginx_config} is not exist."
-#       end
-#       # else
-#       #   fail 'nginx start not correct.'
-#       # end
-#     end
-#   end
-# end
+        # if system config exist, and new than project one, i think some one change it.
+        if test "[[ -e #{system_config_file} && #{system_config_file} -nt #{project_config_file} ]]"
+          # should backup it.
+          execute :sudo, "mv #{system_config_file} #{system_config_file}-#{Time.now.strftime('%Y-%m-%d_%H:%M:%S')}"
+        end
 
-# after 'deploy:finished', 'nginx:config_update'
+        execute :sudo, "cp -a #{project_config_file} #{system_config_file}"
+      end
+
+      next info "Skip reboot #{ns_name} because no config is changed." if should_reload_service == false
+
+      if test("sudo #{service_name} -t")
+        execute :sudo, "#{service_name} -s reload"
+        info "#{service_name} is reloaded!"
+      else
+        fail "#{service_name} config not correct."
+      end
+    end
+  end
+end
+
+after 'deploy:finished', 'nginx:config_update'
