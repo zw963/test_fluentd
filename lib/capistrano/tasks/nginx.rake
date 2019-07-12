@@ -1,7 +1,7 @@
 namespace :nginx do
   desc 'Link project nginx config into system nginx config.'
 
-  task :update do
+  task :config_update do
     on roles(:worker) do
       if test '[[ $(cat /etc/*-release) =~ Ubuntu|Mint ]]'
         nginx_config_dir = '/etc/nginx/sites-enabled'
@@ -41,4 +41,4 @@ namespace :nginx do
   end
 end
 
-after 'deploy:finished', 'nginx:update'
+after 'deploy:finished', 'nginx:config_update'

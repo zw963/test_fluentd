@@ -17,23 +17,29 @@ namespace :fluentbit do
 
       project_config_files = capture("find #{config_root} -name #{config_file_pattern}").split("\n").map {|e| Pathname(e) }
 
+      should_reload_service = false
+
       project_config_files.each do |config|
         system_config_name = config.relative_path_from(config_root).sub("_#{fetch(:stage)}", '')
         system_config_path = fluentbit_config_dir.join(system_config_name).to_s
 
-        # 如果系统的 config 文件存在, 而且不是一个符号链接, 这通常是原有的配置文件,
-        # 此时, 应该首先备份它.
-        if test "[ -f #{system_config_path} -a ! -L #{system_config_path} ]"
-          # Backup not a symlink config
+        fail "#{config} is not exist." unless test "[ -e #{config} ]"
+
+        next if test "[ -e #{system_config_path} ] && diff #{system_config_path} #{config} -q"
+
+        # if system config exist, and two one exist diff.
+        should_reload_service = true
+
+        # if system config exist, and new than project one, i think some one change it.
+        if test "[[ -e #{system_config_path} && #{system_config_path} -nt #{config} ]]"
+          # should backup it.
           execute :sudo, "mv #{system_config_path} #{system_config_path}-#{Time.now.strftime('%Y-%m-%d_%H:%M:%S')}"
         end
 
-        if test "[ -e #{config} ]"
-          execute :sudo, "ln -sf #{config} #{system_config_path}"
-        else
-          fail "#{config} is not exist."
-        end
+        execute :sudo, "cp -a #{config} #{system_config_path}"
       end
+
+      next info "Skip reboot fluentbit because no config is changed" if should_reload_service == false
 
       if test 'sudo systemctl restart td-agent-bit'
         info 'fluentbit is reloaded!'
