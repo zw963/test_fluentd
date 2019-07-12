@@ -1,7 +1,7 @@
 namespace :fluentbit do
   desc 'Link fluentbit config into system fluentbit config.'
 
-  task :update do
+  task :config_update do
     on roles(:worker) do
       if test '[[ $(cat /etc/*-release) =~ Ubuntu|Mint ]]'
         fluentbit_config_dir = Pathname('/etc/td-agent-bit')
@@ -51,4 +51,4 @@ namespace :fluentbit do
   end
 end
 
-# after 'deploy:finished', 'fluentbit:update'
+after 'deploy:finished', 'fluentbit:config_update'
