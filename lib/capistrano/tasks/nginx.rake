@@ -23,7 +23,7 @@ namespace :nginx do
 
         if test "[ -f #{config} -a ! -L #{config} ]"
           # Backup not a symlink config
-          execute :sudo, "mv #{config} /#{config_config_name}-$(date '+%Y-%m-%d_%H:%M')"
+          execute :sudo, "mv #{config} /#{config}-#{Time.now.strftime('%Y-%m-%d_%H:%M:%S')}"
         end
 
         if test "[ -e #{project_nginx_config} ]"
