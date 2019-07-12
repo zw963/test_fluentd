@@ -3,14 +3,14 @@ namespace :nginx do |namespace|
   service_name = ns_name
 
   desc "Link project #{ns_name} config into system #{ns_name} config."
-  task :config_update do
+  task :config_update do |task_name|
     on roles(:worker) do
       if test '[[ $(cat /etc/*-release) =~ Ubuntu|Mint ]]'
-        system_config_dir = Pathname("/etc/#{service_name}")
+        system_config_dir = Pathname('/etc/nginx/sites-enabled')
       elsif test '[[ $(cat /etc/*-release) =~ CentOS ]]'
-        system_config_dir = Pathname("/etc/#{service_name}")
+        system_config_dir = Pathname('/etc/nginx/conf.d')
       else
-        info "Skip `#{ns_name}:update`"
+        info "Distro not be supported, skip `#{task_name}`!"
         exit
       end
 
@@ -40,12 +40,9 @@ namespace :nginx do |namespace|
 
       next info "Skip reboot #{ns_name} because no config is changed." if should_reload_service == false
 
-      if test("sudo #{service_name} -t")
-        execute :sudo, "#{service_name} -s reload"
-        info "#{service_name} is reloaded!"
-      else
-        fail "#{service_name} config not correct."
-      end
+      execute :sudo, "#{service_name} -t"
+      execute :sudo, "#{service_name} -s reload"
+      info "#{ns_name} is reloaded!"
     end
   end
 end

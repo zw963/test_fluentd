@@ -3,14 +3,14 @@ namespace :fluentbit do |namespace|
   service_name = 'td-agent-bit'
 
   desc "Link project #{ns_name} config into system #{ns_name} config."
-  task :config_update do
+  task :config_update do |task_name|
     on roles(:worker) do
       if test '[[ $(cat /etc/*-release) =~ Ubuntu|Mint ]]'
         system_config_dir = Pathname("/etc/#{service_name}")
       elsif test '[[ $(cat /etc/*-release) =~ CentOS ]]'
         system_config_dir = Pathname("/etc/#{service_name}")
       else
-        info "Skip `#{ns_name}:update`"
+        info "Distro not be supported, skip `#{task_name}`!"
         exit
       end
 
@@ -40,7 +40,7 @@ namespace :fluentbit do |namespace|
 
       next info "Skip reboot #{ns_name} because no config is changed." if should_reload_service == false
 
-      test "sudo systemctl restart #{service_name}"
+      execute :sudo, "systemctl restart #{service_name}"
       execute :sudo, "systemctl status #{service_name}"
       info "#{ns_name} is reloaded!"
     end
