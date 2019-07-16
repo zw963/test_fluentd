@@ -31,9 +31,9 @@ namespace :fluentbit do |namespace|
       project_config_files.each do |project_config_file|
         system_config_name = project_config_file.relative_path_from(project_config_dir).sub(project_config_suffix, '')
         system_config_file = system_config_dir.join(system_config_name)
-        system_config_dir = system_config_file.dirname
+        system_sub_conf_dir = system_config_file.dirname
 
-        execute "test -d #{system_config_dir} || sudo mkdir -pv #{system_config_dir}"
+        execute "test -d #{system_sub_conf_dir} || sudo mkdir -pv #{system_sub_conf_dir}"
 
         # if system config exist, and two one no diff.
         next if test "[ -e #{system_config_file} ] && diff #{system_config_file} #{project_config_file} -q"
