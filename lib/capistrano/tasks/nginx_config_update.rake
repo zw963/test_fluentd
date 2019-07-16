@@ -3,7 +3,7 @@ namespace :nginx do |namespace|
   service_name = ns_name
 
   desc "Link project #{ns_name} config into system #{ns_name} config."
-  task :config_update do |task_name|
+  task :config_update, :use_git do |task_name, args|
     on roles(:worker) do
       if test '[[ $(cat /etc/*-release) =~ Ubuntu|Mint ]]'
         system_config_dir = Pathname('/etc/nginx/sites-enabled')
@@ -19,6 +19,14 @@ namespace :nginx do |namespace|
       project_config_files = capture("find #{project_config_dir} -name *#{project_config_suffix}.conf").split("\n").map {|e| Pathname(e) }
 
       should_reload_service = false
+
+      if not args[:use_git].nil?
+        invoke 'git:clone'
+        invoke 'git:update'
+        invoke 'git:create_release'
+        invoke 'deploy:set_current_revision'
+        invoke 'deploy:symlink:linked_dirs'
+      end
 
       project_config_files.each do |project_config_file|
         system_config_name = project_config_file.relative_path_from(project_config_dir).sub(project_config_suffix, '')
