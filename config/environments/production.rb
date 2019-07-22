@@ -84,10 +84,12 @@ Rails.application.configure do
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
 
   if ENV["RAILS_LOG_TO_STDOUT"].present?
-    logger           = AppLogger.new(STDOUT)
-    # logger           = AppLogger.new(FluentLoggerDevice.new('152.32.134.198', 24224))
+    # logger           = AppLogger.new(STDOUT)
+    logger           = AppLogger.new(FluentLoggerDevice.new('152.32.134.198', 24224))
     # logger.formatter = config.log_formatter
     config.colorize_logging = false
+    logger.formatter.jsonize = false
+    logger.with_fields = { tag: 'app.worker' }
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
 
