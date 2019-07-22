@@ -84,12 +84,57 @@ Rails.application.configure do
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
 
   if ENV["RAILS_LOG_TO_STDOUT"].present?
-    logger           = AppLogger.new(STDOUT)
-    # logger.formatter = config.log_formatter
-    config.colorize_logging = false
+    logger           = ActiveSupport::Logger.new(STDOUT)
+    logger.formatter = config.log_formatter
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  config.log_level = :info
+  config.logger = ActFluentLoggerRails::Logger.new
+
+  # config.lograge.keep_original_rails_log = true
+  # config.lograge.logger = ActiveSupport::Logger.new "#{Rails.root}/log/lograge_#{Rails.env}.log"
+
+  config.lograge.enabled = true
+  # {:method=>"GET",
+  #   :path=>"/posts",
+  #   :format=>:html,
+  #   :controller=>"PostsController",
+  #   :action=>"index",
+  #   :status=>200,
+  #   :duration=>4.55,
+  #   :view=>3.0,
+  #   :db=>0.82,
+  #   :exception=>nil,
+  #   :exception_object=>nil,
+  #   :time=>2019-07-10 01:40:51 +0800}
+
+  # config.lograge.formatter = ->(data) do
+  #   {
+  #     'action' => data.dig(:action)
+  #   }.to_json
+  # end
+
+  config.lograge.formatter = Lograge::Formatters::Json.new
+
+  config.lograge.custom_payload do |controller|
+    {
+      host: controller.request.host,
+      user_id: controller.current_user.try(:id)
+    }
+  end
+
+  # config.lograge.custom_options = lambda do |event|
+  #   pp event.payload[:exception]
+  #   pp event.payload[:exception_object]
+  #   {}
+  #   # {
+  #   #   exception: event.payload[:exception],
+  #   #   exception_object: event.payload[:exception_object],
+  #   #   time: Time.now
+  #   # }
+  # end
 end

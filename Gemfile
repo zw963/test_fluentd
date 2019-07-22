@@ -51,14 +51,18 @@ group :development do
 end
 
 gem 'fluentd'
-gem 'act-fluent-logger-rails'
-gem 'lograge'
+gem 'fluent-logger'
+# gem 'act-fluent-logger-rails'
+# gem 'lograge'
 # gem 'fluent-plugin-mongo'
 gem 'fluent-plugin-influxdb'
 # gem 'fluent-plugin-grafana-loki'
 gem 'fluent-plugin-grafana-loki', git: 'https://github.com/grafana/loki', branch: 'master', glob: 'fluentd/fluent-plugin-grafana-loki/*.gemspec'
 
 # gem 'fluent-plugin-detect-exceptions'
+
+gem 'awesome_print'
+gem 'ougai'
 
 group :test do
   # Adds support for Capybara system testing and selenium driver
