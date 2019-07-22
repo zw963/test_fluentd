@@ -85,6 +85,7 @@ Rails.application.configure do
 
   if ENV["RAILS_LOG_TO_STDOUT"].present?
     logger           = AppLogger.new(STDOUT)
+    # logger           = AppLogger.new(FluentLoggerDevice.new('152.32.134.198', 24224))
     # logger.formatter = config.log_formatter
     config.colorize_logging = false
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
