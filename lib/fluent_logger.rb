@@ -61,3 +61,6 @@ class OTALogger
     instance.logger
   end
 end
+
+require 'sidekiq'
+Sidekiq::Logging.logger = OTALogger.logger
