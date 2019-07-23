@@ -35,6 +35,9 @@ class PostsController < ApplicationController
         format.json { render json: @post.errors, status: :unprocessable_entity }
       end
     end
+
+    x = HardWorker.perform_async(@post.id)
+    logger.info "HardWorker job id: #{x}"
   end
 
   # PATCH/PUT /posts/1

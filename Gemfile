@@ -50,20 +50,6 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
-gem 'fluentd'
-gem 'fluent-logger'
-# gem 'act-fluent-logger-rails'
-# gem 'lograge'
-# gem 'fluent-plugin-mongo'
-gem 'fluent-plugin-influxdb'
-# gem 'fluent-plugin-grafana-loki'
-gem 'fluent-plugin-grafana-loki', git: 'https://github.com/grafana/loki', branch: 'master', glob: 'fluentd/fluent-plugin-grafana-loki/*.gemspec'
-
-# gem 'fluent-plugin-detect-exceptions'
-
-gem 'awesome_print'
-gem 'ougai'
-
 group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 2.15'
@@ -74,3 +60,20 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+# gem 'fluentd'
+# gem 'act-fluent-logger-rails'
+# gem 'lograge'
+# gem 'fluent-plugin-mongo'
+# gem 'fluent-plugin-influxdb'
+# gem 'fluent-plugin-grafana-loki'
+# gem 'fluent-plugin-grafana-loki', git: 'https://github.com/grafana/loki', branch: 'master', glob: 'fluentd/fluent-plugin-grafana-loki/*.gemspec'
+
+# gem 'fluent-plugin-detect-exceptions'
+
+gem 'fluent-logger'
+gem 'awesome_print'
+gem 'ougai'
+
+gem 'sidekiq'
+gem 'http'
