@@ -6,8 +6,7 @@ namespace :sidekiq do
         info 'sidekiq is running...'
       else
         within release_path do
-          # execute :bundle, "exec sidekiq -e production"
-          run "nohup bash -c 'cd #{release_path} && bundle exec sidekiq -e production'", pty: true
+          execute :bundle, "exec sidekiq -e production -d -L log/sidekiq.log"
         end
       end
     end
