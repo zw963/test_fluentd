@@ -6,7 +6,7 @@ namespace :sidekiq do
         info 'sidekiq is running...'
       else
         within release_path do
-          execute :bundle, "exec sidekiq -e production -d -L log/sidekiq.log"
+          execute :bundle, "exec sidekiq -e production -L log/sidekiq.log -P #{fetch(:sidekiq_pid)} -d"
         end
       end
     end

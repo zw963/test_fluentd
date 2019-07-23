@@ -2,6 +2,10 @@ ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
 
+require 'sidekiq/testing'
+Sidekiq::Testing.inline!
+Sidekiq::Logging.logger = nil
+
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all

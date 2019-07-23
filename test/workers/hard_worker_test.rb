@@ -1,6 +1,4 @@
 require 'test_helper'
-require 'sidekiq/testing'
-Sidekiq::Testing.inline!
 
 class HardWorkerTest < MiniTest::Unit::TestCase
   def test_example

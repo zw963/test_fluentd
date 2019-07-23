@@ -79,6 +79,7 @@ Sidekiq.configure_server do |config|
   Sidekiq::Logging.logger.before_log = lambda do |data|
     ctx = Thread.current[:sidekiq_context]
     break unless ctx
+
     items = ctx.map {|c| c.split(' ') }.flatten
     data[:sidekiq_context] = items if items.any?
   end
