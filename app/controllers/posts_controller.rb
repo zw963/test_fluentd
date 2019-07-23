@@ -37,7 +37,7 @@ class PostsController < ApplicationController
     end
 
     x = HardWorker.perform_async(@post.id)
-    logger.info "HardWorker job id: #{x}"
+    OTALogger.logger.info "HardWorker job id: #{x}"
   end
 
   # PATCH/PUT /posts/1

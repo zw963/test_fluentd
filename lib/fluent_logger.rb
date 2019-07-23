@@ -11,7 +11,9 @@ class AppLogger < Ougai::Logger
     if Rails.env.development? || Rails.env.test?
       Ougai::Formatters::Readable.new
     else
-      Ougai::Formatters::Bunyan.new
+      logger_formatter = Ougai::Formatters::Bunyan.new
+      logger_formatter.jsonize = false
+      logger_formatter
     end
   end
 
@@ -19,16 +21,14 @@ end
 
 class FluentLoggerDevice
   def initialize(host = 'localhost', port = 24224, opts = {})
-    @log = Fluent::Logger::FluentLogger.new(nil, host: host, port: port)
-    @tag_field = :tag
-    @time_field = :time
+    @logger = Fluent::Logger::FluentLogger.new(nil, host: host, port: port)
   end
 
   def write(data)
     tag = data.delete(:tag)
     time = data.delete(:time)
 
-    unless @log.post_with_time(tag, data, time)
+    unless @logger.post_with_time(tag, data, time)
       p @log.last_error
     end
   end
@@ -44,5 +44,19 @@ module ActiveSupport::TaggedLogging::Formatter
     data[:tags] = current_tags
 
     super(severity, time, progname, data)
+  end
+end
+
+class OTALogger
+  include Singleton
+
+  def initialize
+    logger = AppLogger.new(FluentLoggerDevice.new('152.32.134.198', 24224))
+    logger.with_fields = { tag: 'OTA.worker' }
+    logger
+  end
+
+  def self.logger
+    instance
   end
 end
