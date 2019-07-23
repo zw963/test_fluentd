@@ -36,8 +36,8 @@ class PostsController < ApplicationController
       end
     end
 
-    x = HardWorker.perform_async(@post.id)
-    OTALogger.logger.info "HardWorker job id: #{x}"
+    result = HardWorker.perform_async(@post.id)
+    OTALogger.logger.info "HardWorker job id: #{result}"
   end
 
   # PATCH/PUT /posts/1
@@ -65,13 +65,13 @@ class PostsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_post
-      @post = Post.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_post
+    @post = Post.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def post_params
-      params.require(:post).permit(:name, :content)
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def post_params
+    params.require(:post).permit(:name, :content)
+  end
 end

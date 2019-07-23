@@ -49,14 +49,15 @@ end
 
 class OTALogger
   include Singleton
+  attr_accessor :logger
 
   def initialize
     logger = AppLogger.new(FluentLoggerDevice.new('152.32.134.198', 24224))
     logger.with_fields = { tag: 'OTA.worker' }
-    logger
+    self.logger = logger
   end
 
   def self.logger
-    instance
+    instance.logger
   end
 end
