@@ -1,26 +1,5 @@
-class AppLogger < Ougai::Logger
-  include ActiveSupport::LoggerThreadSafeLevel
-  include LoggerSilence
-
-  def initialize(*args)
-    super
-    after_initialize if respond_to? :after_initialize
-  end
-
-  def create_formatter
-    if Rails.env.development? || Rails.env.test?
-      Ougai::Formatters::Readable.new
-    else
-      logger_formatter = Ougai::Formatters::Bunyan.new
-      logger_formatter.jsonize = false
-      logger_formatter
-    end
-  end
-
-end
-
 class FluentLoggerDevice
-  def initialize(host = 'localhost', port = 24224, opts = {})
+  def initialize(host, port)
     @logger = Fluent::Logger::FluentLogger.new(nil, host: host, port: port)
   end
 
@@ -48,24 +27,50 @@ module ActiveSupport::TaggedLogging::Formatter
   end
 end
 
-class OTALogger
+class AppLogger
   include Singleton
   attr_accessor :logger
 
   def initialize
-    logger = AppLogger.new(FluentLoggerDevice.new('152.32.134.198', 24224))
-    logger.with_fields = { tag: 'OTA.worker' }
+    logger = Base.new(FluentLoggerDevice.new('152.32.134.198', 24224))
+    logger.with_fields = { tag: 'app.worker' }
     self.logger = logger
   end
 
   def self.logger
     ActiveSupport::TaggedLogging.new(instance.logger)
   end
+
+  class Base < Ougai::Logger
+    include ActiveSupport::LoggerThreadSafeLevel
+    include LoggerSilence
+
+    def initialize(*args)
+      super
+      after_initialize if respond_to? :after_initialize
+    end
+
+    def create_formatter
+      if Rails.env.development? || Rails.env.test?
+        Ougai::Formatters::Readable.new
+      else
+        logger_formatter = Ougai::Formatters::Bunyan.new
+        logger_formatter.jsonize = false
+        logger_formatter
+      end
+    end
+  end
+end
+
+class SidekiqLogger < AppLogger
+  def self.logger
+    super.with_fields = {tag: 'sidekiq.worker'}
+  end
 end
 
 require 'sidekiq'
 
-Sidekiq::Logging.logger = OTALogger.logger
+Sidekiq::Logging.logger = SidekiqLogger.logger
 
 Sidekiq.configure_server do |config|
   # logging with sidekiq context

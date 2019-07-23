@@ -87,10 +87,11 @@ Rails.application.configure do
 
   if ENV["RAILS_LOG_TO_STDOUT"].present?
     # logger           = AppLogger.new(STDOUT)
-    logger           = AppLogger.new(FluentLoggerDevice.new('152.32.134.198', 24224))
+    # logger           = AppLogger.new(FluentLoggerDevice.new('152.32.134.198', 24224))
+    logger = AppLogger.logger
     # logger.formatter = config.log_formatter
     logger.with_fields = { tag: 'app.worker' }
-    config.logger    = ActiveSupport::TaggedLogging.new(logger)
+    # config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
 
   # Do not dump schema after migrations.
