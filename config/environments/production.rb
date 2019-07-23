@@ -91,7 +91,7 @@ Rails.application.configure do
     logger = AppLogger.logger
     # logger.formatter = config.log_formatter
     logger.with_fields = { tag: 'app.worker' }
-    # config.logger    = ActiveSupport::TaggedLogging.new(logger)
+    config.logger    = logger
   end
 
   # Do not dump schema after migrations.

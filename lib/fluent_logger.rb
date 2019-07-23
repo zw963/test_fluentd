@@ -33,7 +33,7 @@ class AppLogger
 
   def initialize
     logger = Base.new(FluentLoggerDevice.new('152.32.134.198', 24224))
-    logger.with_fields = { tag: 'app.worker' }
+    # logger.with_fields = { tag: 'app.worker' }
     self.logger = logger
   end
 
