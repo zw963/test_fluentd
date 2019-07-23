@@ -66,5 +66,5 @@ namespace :sidekiq do
 end
 
 # 模式取消重启 siekiq, 如需添加, 手动移除注释.
-# before 'deploy:started', 'sidekiq:quiet'
-# after 'deploy:published', 'sidekiq:restart'
+before 'deploy:started', 'sidekiq:quiet'
+after 'deploy:published', 'sidekiq:restart'
