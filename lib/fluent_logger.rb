@@ -26,7 +26,7 @@ class FluentLoggerDevice
 
   def write(data)
     tag = data.delete(:tag)
-    time = data.delete(:tie)
+    time = data.delete(:time)
 
     unless @log.post_with_time(tag, data, time)
       p @log.last_error
