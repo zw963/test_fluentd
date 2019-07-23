@@ -6,7 +6,7 @@ namespace :sidekiq do
         info 'sidekiq is running...'
       else
         within release_path do
-          execute :bundle, "exec sidekiq -e #{fetch(:rails_env)} -d"
+          execute :bundle, "exec sidekiq -e production -d"
         end
       end
     end
