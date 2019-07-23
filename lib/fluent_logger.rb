@@ -25,11 +25,12 @@ class FluentLoggerDevice
   end
 
   def write(data)
-    tag = data.delete(:tag)
-    time = data.delete(:time)
+    data = { msg: data.to_s } unless data.is_a?(Hash)
+    tag = data.delete(:tag) || 'default_tag'
+    time = data.delete(:time) || Time.now
 
     unless @logger.post_with_time(tag, data, time)
-      p @log.last_error
+      p @logger.last_error
     end
   end
 
@@ -58,9 +59,26 @@ class OTALogger
   end
 
   def self.logger
-    instance.logger
+    ActiveSupport::TaggedLogging.new(instance.logger)
   end
 end
 
 require 'sidekiq'
+
 Sidekiq::Logging.logger = OTALogger.logger
+
+Sidekiq.configure_server do |config|
+  # logging with sidekiq context
+  Sidekiq::Logging.logger.before_log = lambda do |data|
+    ctx = Thread.current[:sidekiq_context]
+    break unless ctx
+    items = ctx.map {|c| c.split(' ') }.flatten
+    data[:sidekiq_context] = items if items.any?
+  end
+
+  # Replace default error handler
+  config.error_handlers.pop
+  config.error_handlers << lambda do |ex, ctx|
+    Sidekiq::Logging.logger.warn(ex, job: ctx[:job]) # except job_str
+  end
+end

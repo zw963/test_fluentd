@@ -7,6 +7,8 @@ class HardWorker
       return logger.info "Wrong things was happened." if res.code != 200
     end
 
+    logger.info "Done parse."
+
     post = Post.find(id)
     post.update_column(:res_correct, true)
   end
