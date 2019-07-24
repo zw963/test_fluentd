@@ -38,7 +38,8 @@ class AppLogger
   end
 
   def self.logger
-    ActiveSupport::TaggedLogging.new(instance.logger)
+    # ActiveSupport::TaggedLogging.new(instance.logger)
+    instance.logger
   end
 
   class Base < Ougai::Logger
@@ -51,13 +52,16 @@ class AppLogger
     end
 
     def create_formatter
-      if Rails.env.development? || Rails.env.test?
-        Ougai::Formatters::Readable.new
-      else
-        logger_formatter = Ougai::Formatters::Bunyan.new
-        logger_formatter.jsonize = false
-        logger_formatter
-      end
+      # if Rails.env.development? || Rails.env.test?
+      #   Ougai::Formatters::Readable.new
+      # else
+      #   logger_formatter = Ougai::Formatters::Bunyan.new
+      #   logger_formatter.jsonize = false
+      #   logger_formatter
+      # end
+      logger_formatter = Ougai::Formatters::Bunyan.new
+      logger_formatter.jsonize = false
+      logger_formatter
     end
   end
 end
