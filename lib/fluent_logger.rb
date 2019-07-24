@@ -14,7 +14,7 @@ class FluentLoggerDevice
   end
 
   def close
-    @log.close
+    @logger.close
   end
 end
 
@@ -58,9 +58,6 @@ class AppLogger
         logger_formatter.jsonize = false
         logger_formatter
       end
-      # logger_formatter = Ougai::Formatters::Bunyan.new
-      # logger_formatter.jsonize = false
-      # logger_formatter
     end
   end
 end
@@ -91,7 +88,7 @@ Sidekiq.configure_server do |config|
 
     tid = Sidekiq::Logging.tid
 
-    data[id] = ["TID-#{tid}"] unless tid.nil?
+    data[:id] = "TID-#{tid}" unless tid.nil?
     true
   end
 
