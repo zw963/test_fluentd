@@ -91,7 +91,7 @@ Sidekiq.configure_server do |config|
 
     tid = Sidekiq::Logging.tid
 
-    data[:tid] = tid unless tid.nil?
+    data[:tags] << "TID-#{tid}" unless tid.nil?
     true
   end
 
