@@ -11,18 +11,31 @@ class HTTPLogger < AppLogger
   end
 end
 
+def text_request_body?(content_type)
+  if content_type.is_a? String
+    if content_type.start_with?("application/") or content_type.start_with?("text/")
+      true
+    end
+  end
+end
+
 ActiveSupport::Notifications.subscribe('start_request.http') do |name, start_time, finish_time, tag, request|
   req = request.dig(:request)
+  verb = req.verb.upcase.to_s
 
   log = {
     name: 'start_request.http',
     start: start_time,
     finish: finish_time,
     cost_time: finish_time - start_time,
-    msg: "#{req.verb.upcase} #{req.uri}",
+    msg: "#{verb} #{req.uri}",
     tags: [tag],
     headers: req.headers.to_h.to_json
   }
+
+  if verb == 'POST' and text_request_body?(req.headers.to_h.dig('Content-Type'))
+    log.update(body: req.body.source)
+  end
 
   HTTPLogger.logger.info(log)
 end
