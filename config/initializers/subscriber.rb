@@ -11,40 +11,42 @@ class HTTPLogger < AppLogger
   end
 end
 
-ActiveSupport::Notifications.subscribe('start_request.http') do |name, start_time, finish_time, id, request|
+ActiveSupport::Notifications.subscribe('start_request.http') do |name, start_time, finish_time, tag, request|
   req = request.dig(:request)
 
-  payload = {headers: req.headers.to_h}
-
-  HTTPLogger.logger.info(
+  log = {
     name: 'start_request.http',
     start: start_time,
     finish: finish_time,
     cost_time: finish_time - start_time,
     msg: "#{req.verb.upcase} #{req.uri}",
-    id: id,
-    payload: payload
-  )
+    tags: [tag],
+    headers: req.headers.to_h.to_json
+  }
+
+  HTTPLogger.logger.info(log)
 end
 
-ActiveSupport::Notifications.subscribe('request.http') do |name, start_time, finish_time, id, response|
+ActiveSupport::Notifications.subscribe('request.http') do |name, start_time, finish_time, tag, response|
   res = response.dig(:response)
-
-  payload = {headers: res.headers.to_h}
-
   code = res.code
 
-  if code != 200
-    payload.update(status_code: code, reason: res.reason, body: res.body.to_s)
-  end
-
-  HTTPLogger.logger.info(
+  log = {
     name: 'done_request.http',
     start: start_time,
     finish: finish_time,
     cost_time: finish_time - start_time,
     msg: res.uri.to_s,
-    id: id,
-    payload: payload
-  )
+    tags: [tag],
+    headers: res.headers.to_h.to_json
+  }
+
+  if code != 200
+    log.update(status_code: code, reason: res.reason, body: res.body.to_s)
+    level = 'warn'
+  else
+    level = 'info'
+  end
+
+  HTTPLogger.logger.send(level, log)
 end
