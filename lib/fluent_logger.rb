@@ -21,7 +21,8 @@ end
 module ActiveSupport::TaggedLogging::Formatter
   def call(severity, time, progname, data)
     data = { msg: data.to_s } unless data.is_a?(Hash)
-    data[:tags] = current_tags
+    data[:tags] ||= []
+    data[:tags] << current_tags
 
     super(severity, time, progname, data)
   end
@@ -91,7 +92,7 @@ Sidekiq.configure_server do |config|
 
     tid = Sidekiq::Logging.tid
 
-    data[:tags] << "TID-#{tid}" unless tid.nil?
+    data[:tags] = ["TID-#{tid}"] unless tid.nil?
     true
   end
 

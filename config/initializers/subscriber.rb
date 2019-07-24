@@ -12,9 +12,9 @@ class HTTPLogger < AppLogger
 end
 
 ActiveSupport::Notifications.subscribe('start_request.http') do |name, start, finish, id, request|
-  HTTPLogger.logger.info(name: name, start: start, finish: finish, id: id, payload: request)
+  HTTPLogger.logger.info(name: 'start_request.http', start: start, finish: finish, cost_time: finish - start, id: id, payload: request)
 end
 
-ActiveSupport::Notifications.subscribe('done_request.http') do |name, start, finish, id, response|
-  HTTPLogger.logger.info(name: name, start: start, finish: finish, id: id, payload: response)
+ActiveSupport::Notifications.subscribe('request.http') do |name, start, finish, id, response|
+  HTTPLogger.logger.info(name: 'done_request.http', start: start, finish: finish, cost_time: finish - start, id: id, payload: response)
 end
