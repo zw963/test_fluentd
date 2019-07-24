@@ -12,5 +12,5 @@ class HTTPLogger < AppLogger
 end
 
 ActiveSupport::Notifications.subscribe('start_request.http') do |name, start, finish, id, payload|
-  HTTPLogger.logger.info(name: name, start: start, finish: finish, id: id, request: 'hello')
+  HTTPLogger.logger.info(name: name, start: start, finish: finish, id: id, request: payload.dig(:request).inspect)
 end
