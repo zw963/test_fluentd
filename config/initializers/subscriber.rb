@@ -22,7 +22,7 @@ ActiveSupport::Notifications.subscribe('start_request.http') do |name, start_tim
     finish: finish_time,
     cost_time: finish_time - start_time,
     msg: req.uri.to_s,
-    tags: [id],
+    id: id,
     payload: payload
   )
 end
@@ -43,7 +43,7 @@ ActiveSupport::Notifications.subscribe('request.http') do |name, start_time, fin
     finish: finish_time,
     cost_time: finish_time - start_time,
     msg: res.uri.to_s,
-    tags: [id],
+    id: id,
     payload: payload
   )
 end
