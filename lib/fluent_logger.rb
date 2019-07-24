@@ -39,7 +39,6 @@ class AppLogger
 
   def self.logger
     ActiveSupport::TaggedLogging.new(instance.logger)
-    # instance.logger
   end
 
   class Base < Ougai::Logger
