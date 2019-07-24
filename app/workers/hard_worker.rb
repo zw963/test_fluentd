@@ -9,7 +9,7 @@ class HardWorker
 
     logger.info "Done parse."
 
-    raise 'failed!'
+    # raise 'failed!'
     post = Post.find(id)
     post.update_column(:res_correct, true)
   end

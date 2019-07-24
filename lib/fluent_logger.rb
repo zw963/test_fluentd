@@ -73,20 +73,28 @@ end
 require 'sidekiq'
 
 Sidekiq::Logging.logger = SidekiqLogger.logger
+ActiveSupport::LogSubscriber.colorize_logging = false
+# Sidekiq::Logging.logger.level = Logger::WARN
 
 Sidekiq.configure_server do |config|
   # logging with sidekiq context
   Sidekiq::Logging.logger.before_log = lambda do |data|
     ctx = Thread.current[:sidekiq_context]
+
     break unless ctx
 
     items = ctx.map {|c| c.split(' ') }.flatten
     data[:sidekiq_context] = items if items.any?
+
+    tid = Sidekiq::Logging.tid
+
+    data[:tid] = tid unless tid.nil?
+    true
   end
 
   # Replace default error handler
   config.error_handlers.pop
-  config.error_handlers << lambda do |ex, ctx|
-    Sidekiq::Logging.logger.warn(ex, job: ctx[:job]) # except job_str
+  config.error_handlers << lambda do |ex, ctx_hash|
+    Sidekiq::Logging.logger.warn(ex, job: ctx_hash[:job]) # except job_str
   end
 end
