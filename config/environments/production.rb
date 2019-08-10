@@ -86,12 +86,9 @@ Rails.application.configure do
   config.colorize_logging = false
 
   if ENV["RAILS_LOG_TO_STDOUT"].present?
-    # logger           = AppLogger.new(STDOUT)
-    # logger           = AppLogger.new(FluentLoggerDevice.new('152.32.134.198', 24224))
-    # logger =
-    # logger.formatter = config.log_formatter
-    # logger.with_fields = { tag: 'app.worker' }
-    config.logger    = AppLogger.logger
+    config.logger = ActFluentLoggerRails::Logger.new
+    config.lograge.enabled = true
+    config.lograge.formatter = Lograge::Formatters::Json.new
   end
 
   # Do not dump schema after migrations.

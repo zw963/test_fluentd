@@ -74,5 +74,8 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'fluent-logger'
 gem 'ougai'
 
+gem 'lograge'
+gem 'act-fluent-logger-rails'
+
 gem 'sidekiq'
 gem 'http'
