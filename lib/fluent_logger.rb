@@ -20,9 +20,11 @@ end
 
 module ActiveSupport::TaggedLogging::Formatter
   def call(severity, time, progname, data)
-    data = { msg: data.to_s } unless data.is_a?(Hash)
-    data[:tags] ||= []
-    data[:tags].concat current_tags
+    if Rails.env.production?
+      data = { msg: data.to_s } unless data.is_a?(Hash)
+      data[:tags] ||= []
+      data[:tags].concat current_tags
+    end
 
     super(severity, time, progname, data)
   end
@@ -33,8 +35,15 @@ class AppLogger
   attr_accessor :logger
 
   def initialize
-    logger = Base.new(FluentLoggerDevice.new('152.32.134.198', 24224))
+    if Rails.env.development? || Rails.env.test?
+      logger = Base.new(STDOUT)
+    else
+      logger = Base.new(FluentLoggerDevice.new('152.32.134.198', 24224))
+    end
+
+    # with_fields is ignored if use STDOUT.
     logger.with_fields = { tag: 'app.worker' }
+
     self.logger = logger
   end
 

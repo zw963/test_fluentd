@@ -72,7 +72,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # gem 'fluent-plugin-detect-exceptions'
 
 gem 'fluent-logger'
-gem 'awesome_print'
 gem 'ougai'
 
 gem 'sidekiq'
