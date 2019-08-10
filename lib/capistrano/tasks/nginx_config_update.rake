@@ -2,13 +2,13 @@ namespace :nginx do |namespace|
   ns_name = namespace.scope.path
   service_name = ns_name
 
-  desc "Link project #{ns_name} config into system #{ns_name} config."
+  desc "Link project #{ns_name} config into system /etc/#{service_name}."
   task :config_update, :use_git do |task_name, args|
     on roles(:worker) do
       if test '[[ $(cat /etc/*-release) =~ Ubuntu|Mint ]]'
-        system_config_dir = Pathname('/etc/nginx/sites-enabled')
+        system_config_dir = Pathname("/etc/#{service_name}/sites-enabled")
       elsif test '[[ $(cat /etc/*-release) =~ CentOS ]]'
-        system_config_dir = Pathname('/etc/nginx/conf.d')
+        system_config_dir = Pathname("/etc/#{service_name}/conf.d")
       else
         info "Distro not be supported, skip `#{task_name}`!"
         exit

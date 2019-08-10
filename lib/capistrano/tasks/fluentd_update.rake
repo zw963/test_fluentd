@@ -1,6 +1,6 @@
-namespace :fluentbit do |namespace|
+namespace :fluentd do |namespace|
   ns_name = namespace.scope.path
-  service_name = 'td-agent-bit'
+  service_name = 'td-agent'
 
   desc "Link project #{ns_name} config into system /etc/#{service_name}."
   task :config_update, :use_git do |task_name, args|
@@ -58,4 +58,4 @@ namespace :fluentbit do |namespace|
   end
 end
 
-after 'deploy:finished', 'fluentbit:config_update'
+after 'deploy:finished', 'fluentd:config_update'
