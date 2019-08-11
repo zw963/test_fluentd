@@ -20,11 +20,14 @@ Sidekiq.configure_server do |config|
     break unless ctx
 
     items = ctx.map {|c| c.split(' ') }.flatten
-    data[:sidekiq_context] = items if items.any?
+    # data[:sidekiq_context] = items if items.any?
 
     tid = Sidekiq::Logging.tid
-
     data[:tags] = ["TID-#{tid}"] unless tid.nil?
+
+    name, jid = items if items.any?
+    data[:name] = "sidekiq (#{name})" unless name.nil?
+    data[:jid] = jid unless jid.nil?
     true
   end
 
