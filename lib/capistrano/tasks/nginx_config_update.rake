@@ -16,7 +16,7 @@ namespace :nginx do |namespace|
 
       project_config_dir = Pathname("#{deploy_to}/current/config/containers/#{ns_name}/config")
       project_config_suffix = "_#{fetch(:stage)}"
-      project_config_files = capture("find #{project_config_dir} -name *#{project_config_suffix}.conf").split("\n").map {|e| Pathname(e) }
+      project_config_files = capture("find #{project_config_dir} -name *#{project_config_suffix}*").split("\n").map {|e| Pathname(e) }
 
       should_reload_service = false
 

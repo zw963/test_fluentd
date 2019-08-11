@@ -10,7 +10,7 @@ end
 
 Sidekiq::Logging.logger = SidekiqLogger.logger
 ActiveSupport::LogSubscriber.colorize_logging = false
-# Sidekiq::Logging.logger.level = Logger::WARN
+Sidekiq::Logging.logger.level = Logger::WARN
 
 Sidekiq.configure_server do |config|
   # logging with sidekiq context
