@@ -1,3 +1,5 @@
+require_relative './tagged_logging_json'
+
 class FluentLoggerDevice
   def initialize(host, port)
     @logger = Fluent::Logger::FluentLogger.new(nil, host: host, port: port)
@@ -15,18 +17,6 @@ class FluentLoggerDevice
 
   def close
     @logger.close
-  end
-end
-
-module ActiveSupport::TaggedLogging::Formatter
-  def call(severity, time, progname, data)
-    if Rails.env.production?
-      data = { msg: data.to_s } unless data.is_a?(Hash)
-      data[:tags] ||= []
-      data[:tags].concat current_tags
-    end
-
-    super(severity, time, progname, data)
   end
 end
 
@@ -48,7 +38,7 @@ class AppLogger
   end
 
   def self.logger
-    ActiveSupport::TaggedLogging.new(instance.logger)
+    ActiveSupport::TaggedLoggingJSON.new(instance.logger)
   end
 
   class Base < Ougai::Logger
