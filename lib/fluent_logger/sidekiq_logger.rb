@@ -8,11 +8,10 @@ class SidekiqLogger < AppLogger
   end
 end
 
-Sidekiq::Logging.logger = SidekiqLogger.logger
-ActiveSupport::LogSubscriber.colorize_logging = false
-Sidekiq::Logging.logger.level = Logger::WARN
-
 Sidekiq.configure_server do |config|
+  Sidekiq::Logging.logger = SidekiqLogger.logger
+  Sidekiq::Logging.logger.level = Logger::WARN
+
   # logging with sidekiq context
   Sidekiq::Logging.logger.before_log = lambda do |data|
     ctx = Thread.current[:sidekiq_context]

@@ -9,7 +9,7 @@ class HardWorker
       return logger.info "Wrong things was happened." if res.code != 200
     end
 
-    logger.info "Done parse."
+    logger.warn "Done parse."
 
     # raise 'failed!'
     post = Post.find(id)

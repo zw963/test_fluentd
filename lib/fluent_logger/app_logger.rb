@@ -20,25 +20,38 @@ class FluentLoggerDevice
   end
 end
 
+module ActiveSupport::TaggedLogging::Formatter
+  def call(severity, time, progname, data)
+    data = { msg: data.to_s } unless data.is_a?(Hash)
+    data[:tags] ||= []
+    data[:tags].concat current_tags
+
+    super(severity, time, progname, data)
+  end
+end
+
 class AppLogger
   include Singleton
   attr_accessor :logger
 
   def initialize
     if Rails.env.development? || Rails.env.test?
-      logger = Base.new(STDOUT)
+      self.logger = Base.new(STDOUT)
     else
       logger = Base.new(FluentLoggerDevice.new('152.32.134.198', 24224))
+      logger.with_fields = { tag: 'app.worker' }
+      self.logger = logger
+
+      old_logger = ActiveSupport::Logger.new('log/production.log')
+      old_logger.formatter = proc do |severity, datetime, progname, msg|
+        ::Logger::Formatter.new.call(severity, datetime, progname, msg.to_json)
+      end
+      logger.extend ActiveSupport::Logger.broadcast(old_logger)
     end
-
-    # with_fields is ignored if use STDOUT.
-    logger.with_fields = { tag: 'app.worker' }
-
-    self.logger = logger
   end
 
   def self.logger
-    ActiveSupport::TaggedLoggingJSON.new(instance.logger)
+    ActiveSupport::TaggedLogging.new(instance.logger)
   end
 
   class Base < Ougai::Logger
