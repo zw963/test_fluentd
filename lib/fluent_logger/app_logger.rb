@@ -1,5 +1,3 @@
-require_relative './tagged_logging_json'
-
 class FluentLoggerDevice
   def initialize(host, port)
     @logger = Fluent::Logger::FluentLogger.new(nil, host: host, port: port)
